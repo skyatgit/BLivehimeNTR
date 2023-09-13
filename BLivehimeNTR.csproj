@@ -9,7 +9,15 @@
 
     <ItemGroup>
         <PackageReference Include="Conesoft.Network-Connections" Version="1.1.0"/>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
         <PackageReference Include="SharpPcap" Version="6.2.5"/>
+    </ItemGroup>
+
+
+    <ItemGroup>
+        <Reference Include="BLiveAPI">
+            <HintPath>BLiveAPI\BLiveAPI.dll</HintPath>
+        </Reference>
     </ItemGroup>
 
 </Project>

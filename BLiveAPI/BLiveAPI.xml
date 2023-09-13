@@ -1,0 +1,214 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>BLiveAPI</name>
+    </assembly>
+    <members>
+        <member name="T:BLiveAPI.BLiveApi">
+            <summary>
+                B站直播间弹幕接口
+            </summary>
+        </member>
+        <member name="M:BLiveAPI.BLiveApi.DecodePacket(System.Byte[],System.Boolean)">
+            <summary>
+                暴露DecodePacket方法
+            </summary>
+            <param name="packetData">需要解包的数据</param>
+            <param name="throwError">是否抛出异常</param>
+        </member>
+        <member name="M:BLiveAPI.BLiveApi.Close">
+            <summary>
+                关闭当前对象中的WebSocket
+            </summary>
+        </member>
+        <member name="M:BLiveAPI.BLiveApi.Connect(System.UInt64,System.Int32,System.String)">
+            <summary>
+                连接指定的直播间
+            </summary>
+            <param name="roomId">直播间id,可以是短位id</param>
+            <param name="protoVer">压缩类型2:zlib,3:brotli<br/>unity中请使用zlib,使用brotli会导致unity闪退假死等问题!!!!
+            </param>
+            <param name="sessdata">使用者的B站Cookie中的SESSDATA</param>
+        </member>
+        <member name="T:BLiveAPI.BLiveEvents">
+            <summary>
+                BLiveAPI的各种事件
+            </summary>
+        </member>
+        <member name="T:BLiveAPI.BLiveEvents.BLiveEventHandler`1">
+            <inheritdoc/>
+        </member>
+        <member name="M:BLiveAPI.BLiveEvents.#ctor">
+            <inheritdoc cref="T:BLiveAPI.BLiveEvents"/>
+        </member>
+        <member name="E:BLiveAPI.BLiveEvents.OpAuthReply">
+            <summary>
+                服务器回复的认证消息
+            </summary>
+        </member>
+        <member name="M:BLiveAPI.BLiveEvents.OnOpAuthReply(Newtonsoft.Json.Linq.JObject,System.Nullable{System.UInt64},System.Byte[])">
+            <inheritdoc cref="E:BLiveAPI.BLiveEvents.OpAuthReply"/>
+        </member>
+        <member name="E:BLiveAPI.BLiveEvents.OpHeartbeatReply">
+            <summary>
+                服务器回复的心跳消息
+            </summary>
+        </member>
+        <member name="M:BLiveAPI.BLiveEvents.OnOpHeartbeatReply(System.Int32,System.Byte[])">
+            <inheritdoc cref="E:BLiveAPI.BLiveEvents.OpHeartbeatReply"/>
+        </member>
+        <member name="E:BLiveAPI.BLiveEvents.OpSendSmsReply">
+            <summary>
+                服务器发送的SMS消息
+            </summary>
+        </member>
+        <member name="M:BLiveAPI.BLiveEvents.OnOpSendSmsReply(Newtonsoft.Json.Linq.JObject,System.Byte[])">
+            <inheritdoc cref="E:BLiveAPI.BLiveEvents.OpSendSmsReply"/>
+        </member>
+        <member name="E:BLiveAPI.BLiveEvents.DanmuMsg">
+            <summary>
+                弹幕消息,guardLevel 0:普通观众 1:总督 2:提督 3:舰长
+            </summary>
+        </member>
+        <member name="E:BLiveAPI.BLiveEvents.InteractWord">
+            <summary>
+                观众进房消息,privilegeType 0:普通观众 1:总督 2:提督 3:舰长
+            </summary>
+        </member>
+        <member name="E:BLiveAPI.BLiveEvents.SendGift">
+            <summary>
+                投喂礼物事件 giftInfo:礼物信息 blindInfo:盲盒礼物信息,如果此礼物不是盲盒爆出则为null coinType:区别是金瓜子礼物还是银瓜子礼物 guardLevel 0:普通观众 1:总督 2:提督 3:舰长
+            </summary>
+        </member>
+        <member name="E:BLiveAPI.BLiveEvents.SuperChatMessage">
+            <summary>
+                SC消息事件 guardLevel 0:普通观众 1:总督 2:提督 3:舰长
+            </summary>
+        </member>
+        <member name="E:BLiveAPI.BLiveEvents.UserToastMsg">
+            <summary>
+                上舰消息事件 price的单位是金瓜子
+            </summary>
+        </member>
+        <member name="E:BLiveAPI.BLiveEvents.WebSocketError">
+            <summary>
+                WebSocket异常关闭
+            </summary>
+        </member>
+        <member name="M:BLiveAPI.BLiveEvents.OnWebSocketError(System.String,System.Int32)">
+            <inheritdoc cref="E:BLiveAPI.BLiveEvents.WebSocketError"/>
+        </member>
+        <member name="E:BLiveAPI.BLiveEvents.WebSocketClose">
+            <summary>
+                WebSocket主动关闭
+            </summary>
+        </member>
+        <member name="M:BLiveAPI.BLiveEvents.OnWebSocketClose(System.String,System.Int32)">
+            <inheritdoc cref="E:BLiveAPI.BLiveEvents.WebSocketClose"/>
+        </member>
+        <member name="E:BLiveAPI.BLiveEvents.DecodeError">
+            <summary>
+                解析消息过程出现的错误，不影响WebSocket正常运行，所以不抛出异常(当前版本暂时会抛出)
+            </summary>
+        </member>
+        <member name="M:BLiveAPI.BLiveEvents.OnDecodeError(System.String,System.Exception)">
+            <inheritdoc cref="E:BLiveAPI.BLiveEvents.DecodeError"/>
+        </member>
+        <member name="T:BLiveAPI.ConnectAlreadyRunningException">
+            <summary>
+                同一对象的Connect方法重复运行的异常
+            </summary>
+        </member>
+        <member name="M:BLiveAPI.ConnectAlreadyRunningException.#ctor">
+            <inheritdoc cref="T:BLiveAPI.ConnectAlreadyRunningException"/>
+        </member>
+        <member name="T:BLiveAPI.InvalidRoomIdException">
+            <summary>
+                房间号无效的异常
+            </summary>
+        </member>
+        <member name="M:BLiveAPI.InvalidRoomIdException.#ctor">
+            <inheritdoc cref="T:BLiveAPI.InvalidRoomIdException"/>
+        </member>
+        <member name="T:BLiveAPI.InvalidProtoVerException">
+            <summary>
+                protoVer无效,只能是2或3
+            </summary>
+        </member>
+        <member name="M:BLiveAPI.InvalidProtoVerException.#ctor">
+            <inheritdoc cref="T:BLiveAPI.InvalidProtoVerException"/>
+        </member>
+        <member name="T:BLiveAPI.UnknownServerOperationException">
+            <summary>
+                未知的ServerOperation异常
+            </summary>
+        </member>
+        <member name="M:BLiveAPI.UnknownServerOperationException.#ctor(System.Object)">
+            <inheritdoc cref="T:BLiveAPI.UnknownServerOperationException"/>
+        </member>
+        <member name="T:BLiveAPI.UnknownVersionException">
+            <summary>
+                未知的Version异常
+            </summary>
+        </member>
+        <member name="M:BLiveAPI.UnknownVersionException.#ctor(System.Object)">
+            <inheritdoc cref="T:BLiveAPI.UnknownVersionException"/>
+        </member>
+        <member name="T:BLiveAPI.NetworkException">
+            <summary>
+                网络异常
+            </summary>
+        </member>
+        <member name="M:BLiveAPI.NetworkException.#ctor">
+            <inheritdoc cref="T:BLiveAPI.NetworkException"/>
+        </member>
+        <member name="T:BLiveAPI.DomainNameEncodingException">
+            <summary>
+                主机用户名编码异常
+            </summary>
+        </member>
+        <member name="M:BLiveAPI.DomainNameEncodingException.#ctor">
+            <inheritdoc cref="T:BLiveAPI.DomainNameEncodingException"/>
+        </member>
+        <member name="T:BLiveAPI.InvalidBytesLengthException">
+            <summary>
+                字节集长度错误
+            </summary>
+        </member>
+        <member name="M:BLiveAPI.InvalidBytesLengthException.#ctor">
+            <inheritdoc cref="T:BLiveAPI.InvalidBytesLengthException"/>
+        </member>
+        <member name="T:BLiveAPI.WebSocketCloseException">
+            <summary>
+                WebSocket主动关闭
+            </summary>
+        </member>
+        <member name="M:BLiveAPI.WebSocketCloseException.#ctor">
+            <inheritdoc cref="T:BLiveAPI.WebSocketCloseException"/>
+        </member>
+        <member name="T:BLiveAPI.WebSocketErrorException">
+            <summary>
+                WebSocket异常关闭
+            </summary>
+        </member>
+        <member name="M:BLiveAPI.WebSocketErrorException.#ctor">
+            <inheritdoc cref="T:BLiveAPI.WebSocketErrorException"/>
+        </member>
+        <member name="T:BLiveAPI.SessdataExpireException">
+            <summary>
+                SESSDATA过期
+            </summary>
+        </member>
+        <member name="M:BLiveAPI.SessdataExpireException.#ctor">
+            <inheritdoc cref="T:BLiveAPI.SessdataExpireException"/>
+        </member>
+        <member name="T:BLiveAPI.TargetCmdAttribute">
+            <summary>
+                用来标记某个方法想要绑定哪些cmd对应的SMS消息事件
+            </summary>
+        </member>
+        <member name="M:BLiveAPI.TargetCmdAttribute.#ctor(System.String[])">
+            <inheritdoc cref="T:BLiveAPI.TargetCmdAttribute"/>
+        </member>
+    </members>
+</doc>

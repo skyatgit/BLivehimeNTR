@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BLiveAPI;
 using Conesoft.Network_Connections;
+using Newtonsoft.Json.Linq;
+using PacketDotNet;
 using SharpPcap;
 using SharpPcap.LibPcap;
 
@@ -12,6 +16,8 @@ namespace BLivehimeNTR;
 /// </summary>
 public partial class MainWindow
 {
+    private readonly BLiveApi _api = new();
+    private readonly List<byte> _buffer = new();
     private readonly bool _running;
     private Connection? _connection;
     private LibPcapLiveDevice? _device;
@@ -20,7 +26,22 @@ public partial class MainWindow
     {
         InitializeComponent();
         _running = true;
+        _api.DanmuMsg += DanmuMsgEvent;
+        _api.OpSendSmsReply += OpSendSmsReplyEvent;
         ScanBLivehimeProcess();
+    }
+
+    [TargetCmd("OTHERS")]
+    private void OpSendSmsReplyEvent(object sender, (string cmd, string hitCmd, JObject jsonRawData, byte[] rawData) e)
+    {
+        Console.WriteLine($"{e.cmd}:{e.hitCmd}");
+        MsgBox.Text += $"{e.cmd}:{e.hitCmd}\n";
+    }
+
+    private void DanmuMsgEvent(object sender, (string msg, ulong userId, string userName, int guardLevel, string face, JObject jsonRawData, byte[] rawData) e)
+    {
+        Console.WriteLine($"{e.userName}:{e.msg}");
+        MsgBox.Text += $"{e.userName}:{e.msg}\n";
     }
 
     private async void ScanBLivehimeProcess()
@@ -36,6 +57,7 @@ public partial class MainWindow
                 if (_device != null) _device.OnPacketArrival += OnPacketArrivalEvent;
                 _device?.StartCapture();
                 _connection = connection;
+                BLivehimeStatus.Content = $"直播姬{(connection is null ? "未" : "已")}启动";
             }
 
             await Task.Delay(1000);
@@ -50,7 +72,24 @@ public partial class MainWindow
 
     private void OnPacketArrivalEvent(object sender, PacketCapture e)
     {
-        Console.WriteLine(e.GetPacket().GetPacket());
+        var ethPacket = e.GetPacket().GetPacket();
+        var internetPacket = ethPacket.PayloadPacket;
+        var transmissionPacket = internetPacket.PayloadPacket;
+        var dataPacketSegment = transmissionPacket.PayloadDataSegment;
+        var push = (transmissionPacket as TcpPacket)!.Push;
+        var finished = (transmissionPacket as TcpPacket)!.Finished;
+        if (finished)
+        {
+            _buffer.Clear();
+            return;
+        }
+
+        if (!push) _buffer.Clear();
+        _buffer.AddRange(dataPacketSegment.ActualBytes());
+        if (!push) return;
+        var buffer = _buffer.ToArray();
+        _buffer.Clear();
+        Dispatcher.Invoke(() => { _api.DecodePacket(buffer, false); });
     }
 }
 

@@ -5,4 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Title="BLivehimeNTR" Height="500" Width="400">
+    <Grid>
+        <Label Name="BLivehimeStatus" Content="直播姬未启动" />
+        <TextBox Name="MsgBox" IsReadOnly="True" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,30,0,0" Height="200" Width="360" />
+    </Grid>
 </Window>
