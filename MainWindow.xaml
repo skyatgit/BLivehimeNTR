@@ -6,7 +6,7 @@
         mc:Ignorable="d"
         Title="BLivehimeNTR" Height="500" Width="400">
     <Grid>
-        <Label Name="BLivehimeStatus" Content="直播姬未启动" />
-        <TextBox Name="MsgBox" IsReadOnly="True" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,30,0,0" Height="200" Width="360" />
+        <Label Name="BLivehimeStatus" Content="🔴 未连接到直播姬" Foreground="Red" FontWeight="Bold" FontSize="16" Margin="10" />
+        <TextBox Name="MsgBox" IsReadOnly="True" Margin="10,50,10,10" />
     </Grid>
 </Window>

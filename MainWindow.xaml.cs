@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Media;
 using BLiveAPI;
 using Conesoft.Network_Connections;
 using Newtonsoft.Json.Linq;
@@ -57,10 +58,11 @@ public partial class MainWindow
                 if (_device != null) _device.OnPacketArrival += OnPacketArrivalEvent;
                 _device?.StartCapture();
                 _connection = connection;
-                BLivehimeStatus.Content = $"直播姬{(connection is null ? "未" : "已")}启动";
+                BLivehimeStatus.Content = $"🔴 {(connection is null ? "未" : "已")}连接到直播姬";
+                BLivehimeStatus.Foreground = connection is null ? Brushes.Red : Brushes.LimeGreen;
             }
 
-            await Task.Delay(1000);
+            await Task.Delay(200);
         }
     }
 
