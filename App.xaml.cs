@@ -8,13 +8,16 @@ namespace BLivehimeNTR;
 /// </summary>
 public partial class App
 {
+    private Mutex? _mutex;
+
     protected override void OnStartup(StartupEventArgs e)
     {
-        _ = new Mutex(true, "BLivehimeNTR", out var createdNew);
+        _mutex = new Mutex(true, "BLivehimeNTR", out var createdNew);
 
         if (!createdNew)
         {
             MessageBox.Show("不要重复启动本程序。");
+            _mutex.Dispose();
             Current.Shutdown();
             return;
         }
