@@ -18,6 +18,8 @@ namespace BLivehimeNTR;
 public partial class MainWindow
 {
     private readonly BLiveApi _api = new();
+    private readonly BLiveTcpServer _bLiveTcpServer = new();
+    private readonly BLiveWebSocketServer _bLiveWebSocketServer = new();
     private readonly List<byte> _buffer = new();
     private readonly bool _running;
     private Connection? _connection;
@@ -29,14 +31,36 @@ public partial class MainWindow
         _running = true;
         _api.DanmuMsg += DanmuMsgEvent;
         _api.OpSendSmsReply += OpSendSmsReplyEvent;
+        _bLiveTcpServer.ServerStateChange += ServerStateChange;
+        _bLiveTcpServer.ClientCountChange += TcpClientCountChange;
+        _bLiveWebSocketServer.ServerStateChange += ServerStateChange;
+        _bLiveWebSocketServer.ClientCountChange += WebSocketClientCountChange;
+        _bLiveTcpServer.StartAsync();
+        _bLiveWebSocketServer.StartAsync();
         ScanBLivehimeProcess();
     }
 
-    [TargetCmd("OTHERS")]
+    private void WebSocketClientCountChange(string result)
+    {
+        WebSocketClientCount.Content = $"WebSocket客户端:{result}";
+    }
+
+    private void TcpClientCountChange(string result)
+    {
+        TcpClientCount.Content = $"Tcp客户端:{result}";
+    }
+
+    private void ServerStateChange(string result)
+    {
+        MsgBox.AppendText($"{result}\n");
+    }
+
+    [TargetCmd("ALL")]
     private void OpSendSmsReplyEvent(object sender, (string cmd, string hitCmd, JObject jsonRawData, byte[] rawData) e)
     {
-        Console.WriteLine($"{e.cmd}:{e.hitCmd}");
-        MsgBox.Text += $"{e.cmd}:{e.hitCmd}\n";
+        var data = BLiveBase.CreateSmsPacket(0, e.rawData);
+        _bLiveWebSocketServer.SendSmsToClients(data);
+        _bLiveTcpServer.SendSmsToClients(data);
     }
 
     private void DanmuMsgEvent(object sender, (string msg, ulong userId, string userName, int guardLevel, string face, JObject jsonRawData, byte[] rawData) e)
