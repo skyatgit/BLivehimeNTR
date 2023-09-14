@@ -3,12 +3,22 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:tb="http://www.hardcodet.net/taskbar"
         mc:Ignorable="d"
-        Title="BLivehimeNTR" Height="500" Width="450">
+        Title="BLivehimeNTR" Height="500" Width="450"
+        Closing="MainWindow_OnClosing">
     <Grid>
         <Label Name="BLivehimeStatus" Content="🔴 未连接到直播姬" Foreground="Red" FontWeight="Bold" FontSize="16" Margin="10" />
         <Label Name="TcpClientCount" Content="Tcp客户端:0" Margin="160,14,10,10" />
         <Label Name="WebSocketClientCount" Content="WebSocket客户端:0" Margin="260,14,10,10" />
         <TextBox Name="MsgBox" IsReadOnly="True" Margin="10,50,10,10" />
+        <tb:TaskbarIcon IconSource="logo.ico" ToolTipText="BLivehimeNTR">
+            <tb:TaskbarIcon.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="打开" Click="Open_Click" />
+                    <MenuItem Header="退出" Click="Exit_Click" />
+                </ContextMenu>
+            </tb:TaskbarIcon.ContextMenu>
+        </tb:TaskbarIcon>
     </Grid>
 </Window>

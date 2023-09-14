@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media;
 using BLiveAPI;
 using Conesoft.Network_Connections;
@@ -38,6 +40,18 @@ public partial class MainWindow
         _bLiveTcpServer.StartAsync();
         _bLiveWebSocketServer.StartAsync();
         ScanBLivehimeProcess();
+    }
+
+
+    private void Open_Click(object sender, RoutedEventArgs e)
+    {
+        Show();
+        WindowState = WindowState.Normal;
+    }
+
+    private void Exit_Click(object sender, RoutedEventArgs e)
+    {
+        Application.Current.Shutdown();
     }
 
     private void WebSocketClientCountChange(string result)
@@ -116,6 +130,12 @@ public partial class MainWindow
         var buffer = _buffer.ToArray();
         _buffer.Clear();
         Dispatcher.Invoke(() => { _api.DecodePacket(buffer, false); });
+    }
+
+    private void MainWindow_OnClosing(object? sender, CancelEventArgs e)
+    {
+        e.Cancel = true;
+        Hide();
     }
 }
 

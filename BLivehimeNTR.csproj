@@ -1,23 +1,27 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
         <TargetFramework>net7.0-windows</TargetFramework>
         <Nullable>enable</Nullable>
         <UseWPF>true</UseWPF>
+        <Version>1.0.0.0</Version>
+        <AssemblyVersion>$(Version)</AssemblyVersion>
+        <FileVersion>$(Version)</FileVersion>
+        <Authors>skyatgit</Authors>
+        <ApplicationIcon>logo.ico</ApplicationIcon>
     </PropertyGroup>
-
     <ItemGroup>
         <PackageReference Include="Conesoft.Network-Connections" Version="1.1.0"/>
+        <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="1.1.0"/>
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
         <PackageReference Include="SharpPcap" Version="6.2.5"/>
     </ItemGroup>
-
-
     <ItemGroup>
         <Reference Include="BLiveAPI">
             <HintPath>BLiveAPI\BLiveAPI.dll</HintPath>
         </Reference>
     </ItemGroup>
-
+    <ItemGroup>
+        <Resource Include="logo.ico"/>
+    </ItemGroup>
 </Project>
