@@ -29,6 +29,7 @@ public partial class MainWindow
 
     public MainWindow()
     {
+        if (Environment.ExitCode == 1) return;
         InitializeComponent();
         _running = true;
         _api.DanmuMsg += DanmuMsgEvent;
@@ -134,6 +135,7 @@ public partial class MainWindow
 
     private void MainWindow_OnClosing(object? sender, CancelEventArgs e)
     {
+        if (_connection is null) return;
         e.Cancel = true;
         Hide();
     }

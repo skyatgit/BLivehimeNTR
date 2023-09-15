@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Windows;
+using SharpPcap.LibPcap;
 
 namespace BLivehimeNTR;
 
@@ -15,35 +17,50 @@ public partial class App
 
     protected override void OnStartup(StartupEventArgs e)
     {
+        base.OnStartup(e);
         _mutex = new Mutex(true, "BLivehimeNTR", out var createdNew);
-
         if (!createdNew)
         {
             MessageBox.Show("不要重复启动本程序。");
-            _mutex.Dispose();
-            Current.Shutdown();
+            AppShutdown();
             return;
         }
 
-        var x86TempFolderPath = Path.Combine(Path.GetTempPath(), "BLivehimeNTR", "x86");
-        var x64TempFolderPath = Path.Combine(Path.GetTempPath(), "BLivehimeNTR", "x64");
-        Environment.SetEnvironmentVariable("Path", $"{x86TempFolderPath};{Environment.GetEnvironmentVariable("Path", EnvironmentVariableTarget.Process)}", EnvironmentVariableTarget.Process);
-        Environment.SetEnvironmentVariable("Path", $"{x64TempFolderPath};{Environment.GetEnvironmentVariable("Path", EnvironmentVariableTarget.Process)}", EnvironmentVariableTarget.Process);
-        Directory.CreateDirectory(x86TempFolderPath);
-        Directory.CreateDirectory(x64TempFolderPath);
+        if (NpcapInstalled()) return;
+        if (MessageBox.Show("需要安装Npcap才能使用本程序,是否继续安装?", "安装Npcap", MessageBoxButton.YesNo) is MessageBoxResult.No)
+        {
+            AppShutdown();
+            return;
+        }
+
+        var filePath = Path.Combine(Path.GetTempPath(), "npcap-1.76.exe");
         var assembly = Assembly.GetExecutingAssembly();
-        using var x86WpcapDll = assembly.GetManifestResourceStream("BLivehimeNTR.Npcap.x86.wpcap.dll");
-        using var x86PacketDll = assembly.GetManifestResourceStream("BLivehimeNTR.Npcap.x86.Packet.dll");
-        using var x64WpcapDll = assembly.GetManifestResourceStream("BLivehimeNTR.Npcap.x64.wpcap.dll");
-        using var x64PacketDll = assembly.GetManifestResourceStream("BLivehimeNTR.Npcap.x64.Packet.dll");
-        using var x86WpcapFileStream = new FileStream(Path.Combine(x86TempFolderPath, "wpcap.dll"), FileMode.Create);
-        using var x86PacketFileStream = new FileStream(Path.Combine(x86TempFolderPath, "Packet.dll"), FileMode.Create);
-        using var x64WpcapFileStream = new FileStream(Path.Combine(x64TempFolderPath, "wpcap.dll"), FileMode.Create);
-        using var x64PacketFileStream = new FileStream(Path.Combine(x64TempFolderPath, "Packet.dll"), FileMode.Create);
-        x86WpcapDll?.CopyTo(x86WpcapFileStream);
-        x86PacketDll?.CopyTo(x86PacketFileStream);
-        x64WpcapDll?.CopyTo(x64WpcapFileStream);
-        x64PacketDll?.CopyTo(x64PacketFileStream);
-        base.OnStartup(e);
+        using var file = assembly.GetManifestResourceStream("BLivehimeNTR.Npcap.npcap-1.76.exe");
+        using var fileStream = new FileStream(filePath, FileMode.Create);
+        file?.CopyTo(fileStream);
+        fileStream.Dispose();
+        file?.Dispose();
+        var process = Process.Start(filePath);
+        process.WaitForExit();
+        if (process.ExitCode != 0) AppShutdown();
+    }
+
+    private static bool NpcapInstalled()
+    {
+        try
+        {
+            return LibPcapLiveDeviceList.Instance is not null;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private void AppShutdown()
+    {
+        _mutex?.Dispose();
+        Current.Shutdown(1);
+        Console.WriteLine("QQQ");
     }
 }

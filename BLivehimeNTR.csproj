@@ -25,9 +25,6 @@
         <Resource Include="logo.ico"/>
     </ItemGroup>
     <ItemGroup>
-        <EmbeddedResource Include="Npcap\x64\Packet.dll"/>
-        <EmbeddedResource Include="Npcap\x64\wpcap.dll"/>
-        <EmbeddedResource Include="Npcap\x86\Packet.dll"/>
-        <EmbeddedResource Include="Npcap\x86\wpcap.dll"/>
+        <EmbeddedResource Include="Npcap\npcap-1.76.exe"/>
     </ItemGroup>
 </Project>
