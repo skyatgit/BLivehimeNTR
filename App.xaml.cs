@@ -32,16 +32,7 @@ public partial class App
             return;
         }
 
-        var filePath = Path.Combine(Path.GetTempPath(), "npcap-1.76.exe");
-        var assembly = Assembly.GetExecutingAssembly();
-        using var file = assembly.GetManifestResourceStream("BLivehimeNTR.Npcap.npcap-1.76.exe");
-        using var fileStream = new FileStream(filePath, FileMode.Create);
-        file?.CopyTo(fileStream);
-        fileStream.Dispose();
-        file?.Dispose();
-        var process = Process.Start(filePath);
-        process.WaitForExit();
-        if (process.ExitCode != 0) AppShutdown();
+        if (!TryInstallNpcap()) AppShutdown();
     }
 
     private static bool NpcapInstalled()
@@ -49,6 +40,27 @@ public partial class App
         try
         {
             return LibPcapLiveDeviceList.Instance is not null;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private static bool TryInstallNpcap()
+    {
+        try
+        {
+            var filePath = Path.Combine(Path.GetTempPath(), "npcap-1.76.exe");
+            var assembly = Assembly.GetExecutingAssembly();
+            using var file = assembly.GetManifestResourceStream("BLivehimeNTR.Npcap.npcap-1.76.exe");
+            using var fileStream = new FileStream(filePath, FileMode.Create);
+            file?.CopyTo(fileStream);
+            fileStream.Dispose();
+            file?.Dispose();
+            var process = Process.Start(new ProcessStartInfo(filePath) { Verb = "runas", UseShellExecute = true });
+            process?.WaitForExit();
+            return process?.ExitCode == 0;
         }
         catch
         {
