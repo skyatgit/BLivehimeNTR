@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Threading;
@@ -61,6 +60,5 @@ public partial class App
     {
         _mutex?.Dispose();
         Current.Shutdown(1);
-        Console.WriteLine("QQQ");
     }
 }
