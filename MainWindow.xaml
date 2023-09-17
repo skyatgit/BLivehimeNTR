@@ -12,7 +12,7 @@
         <Label Name="TcpClientCount" Content="Tcp客户端:0" Margin="160,14,10,10" />
         <Label Name="WebSocketClientCount" Content="WebSocket客户端:0" Margin="260,14,10,10" />
         <TextBox Name="MsgBox" IsReadOnly="True" Margin="10,50,10,10" />
-        <tb:TaskbarIcon IconSource="logo.ico" ToolTipText="BLivehimeNTR">
+        <tb:TaskbarIcon IconSource="logo.ico" ToolTipText="BLivehimeNTR" TrayMouseDoubleClick="Open_Click">
             <tb:TaskbarIcon.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="打开" Click="Open_Click" />
