@@ -23,6 +23,7 @@ public partial class MainWindow
     private readonly BLiveTcpServer _bLiveTcpServer = new();
     private readonly BLiveWebSocketServer _bLiveWebSocketServer = new();
     private readonly List<byte> _buffer = new();
+    private readonly List<byte> _recycledBuffer = new();
     private readonly bool _running;
     private Connection? _connection;
     private LibPcapLiveDevice? _device;
@@ -125,12 +126,45 @@ public partial class MainWindow
             return;
         }
 
-        if (!push) _buffer.Clear();
-        _buffer.AddRange(dataPacketSegment.ActualBytes());
-        if (!push) return;
-        var buffer = _buffer.ToArray();
-        _buffer.Clear();
-        Dispatcher.Invoke(() => { _api.DecodePacket(buffer, false); });
+        if (push)
+        {
+            _recycledBuffer.Clear();
+            _buffer.AddRange(dataPacketSegment.ActualBytes());
+            var buffer = _buffer.ToArray();
+            _buffer.Clear();
+            Dispatcher.Invoke(() =>
+            {
+                try
+                {
+                    _api.DecodePacket(buffer, true);
+                }
+                catch
+                {
+                    _recycledBuffer.AddRange(dataPacketSegment.ActualBytes());
+                }
+            });
+        }
+        else
+        {
+            _buffer.Clear();
+            _buffer.AddRange(dataPacketSegment.ActualBytes());
+            if (_recycledBuffer.Count == 0) return;
+            _buffer.AddRange(_recycledBuffer);
+            _recycledBuffer.Clear();
+            var buffer = _buffer.ToArray();
+            _buffer.Clear();
+            Dispatcher.Invoke(() =>
+            {
+                try
+                {
+                    _api.DecodePacket(buffer, true);
+                }
+                catch
+                {
+                    _buffer.AddRange(dataPacketSegment.ActualBytes());
+                }
+            });
+        }
     }
 
     private void MainWindow_OnClosing(object? sender, CancelEventArgs e)
